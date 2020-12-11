@@ -40,9 +40,7 @@ const cars = [
 
 //  获取最后一辆车的in_stock属性
 
-const in_stock_prop = fp.curry(fp.prop)('in_stock')
-
-const isLastInStock = fp.flowRight(in_stock_prop, fp.last)
+const isLastInStock = fp.flowRight(fp.prop('in_stock'), fp.last)
 
 const last_in_stock = isLastInStock(cars)
 
@@ -50,9 +48,7 @@ console.log(last_in_stock)
 
 //  获取第一辆车的名字
 
-const name_prop = fp.curry(fp.prop)('name')
-
-const getFirstName = fp.flowRight(name_prop, fp.first)
+const getFirstName = fp.flowRight(fp.prop('name'), fp.first)
 
 const last_car_name = getFirstName(cars)
 
@@ -60,18 +56,28 @@ console.log(last_car_name)
 
 // 重构averageDollarValue
 
-const _map = fp.curry(fp.map)(val => val.dollar_value)
+const _map = fp.map(val => val.dollar_value)
 
-const _reduce = fp.curry(fp.reduce)(fp.add)(0)
+const _reduce = fp.reduce(fp.add, 0)
 
 const _len = arr => arr.length
 
-const average = (length, total) => {
-	return total / length
-}
 // 返回一个接受total的函数
-const _average = fp.flowRight(fp.curry(average), _len)
 
-const averageDollarValue = fp.flowRight(_average(cars), _reduce, _map)
+const averageDollarValue = function (arr) {
+	return fp.flowRight(_reduce, _map)(arr) / fp.flowRight(_len, _map)(arr)
+}
 
 console.log(averageDollarValue(cars))
+
+//  sanitizeNames()
+
+let _underscore = fp.replace(/\W+/g, '_')
+
+const doWith = fp.flowRight(_underscore, fp.lowerCase)
+
+const sanitizeNames = fp.map(doWith)
+
+const res = sanitizeNames(['Hello World'])
+
+console.log(res)
